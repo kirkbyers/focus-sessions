@@ -47,19 +47,18 @@ class EXComponent extends React.Component<Props, State> {
           clearInterval(this.state.currentInterval);
           endFocusNotification();
         }
-      }, 6000)
+      }, 200)
     }));
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <ButtonBarComponent
-          hidden={false}
+        {this.state.currentIntervalValue === 0 && <ButtonBarComponent
           pressFocusHandler={this.handleFocusClick}
           pressBreakHandler={this.handleBreakClick}
           pressBreakPlusHandler={this.handleBreakPlusClick}
-        />
+        />}
         <NotesComponent />
       </View>
     );
