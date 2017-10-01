@@ -3,14 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 
 interface Props { }
 
-const EXComponent: React.SFC<Props> = (props) => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>
-        Hello World
+class EXComponent extends React.Component<Props, {}> {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>
+          Hello World
       </Text>
-    </View>
-  );
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
