@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import NotesComponent from './note-pad/note-pad.container';
 import ButtonBarComponent from './button-bar/button-bar.component';
 import { theme } from './constants/theme';
+import endFocusNotification from './notifications/end-focus';
 
 interface Props { }
 
@@ -43,8 +44,8 @@ class EXComponent extends React.Component<Props, State> {
         if (this.state.currentIntervalValue > 0) {
           this.setState((prevState: State) => ({ currentIntervalValue: Number(prevState.currentIntervalValue) - 1 }));
         } else {
-          console.log('**INTERVAL COMPLETE**');
           clearInterval(this.state.currentInterval);
+          endFocusNotification();
         }
       }, 6000)
     }));
