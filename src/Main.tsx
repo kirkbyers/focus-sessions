@@ -16,7 +16,7 @@ interface State {
   currentInterval: Number;
 }
 
-class EXComponent extends React.Component<Props, State> {
+class MainComponent extends React.Component<Props, State> {
   state = {
     focusInterval: 50,
     breakInterval: 10,
@@ -57,34 +57,47 @@ class EXComponent extends React.Component<Props, State> {
   }
 
   render() {
+    const sessionCompleteRatio = (this.state.initIntervalValue - this.state.currentIntervalValue) / this.state.initIntervalValue;
     return (
-      <View style={styles.container}>
-        {this.state.currentIntervalValue === 0 && <ButtonBarComponent
-          pressFocusHandler={this.handleFocusClick}
-          pressBreakHandler={this.handleBreakClick}
-          pressBreakPlusHandler={this.handleBreakPlusClick}
-        />}
-        <NotesComponent />
-        {this.state.currentInterval !== 0 && (
-          <Button title="Cancel Session" onPress={this.handleCancelSession} />
-        )}
+      <View style={styles.root}>
+        {this.state.initIntervalValue !== 0 && <View style={{ backgroundColor: '#FFF1B8', flex: 100 * sessionCompleteRatio }} />}
+        {this.state.initIntervalValue !== 0 && <View style={{ backgroundColor: '#f58db6', flex: 100 - (100 * sessionCompleteRatio) }} />}
+        {this.state.currentIntervalValue === 0 && <View style={{ backgroundColor: '#FFF1B8', flex: 1 }} />}
+        <View style={styles.container}>
+          {this.state.currentIntervalValue === 0 && <ButtonBarComponent
+            pressFocusHandler={this.handleFocusClick}
+            pressBreakHandler={this.handleBreakClick}
+            pressBreakPlusHandler={this.handleBreakPlusClick}
+          />}
+          <NotesComponent />
+          {this.state.currentInterval !== 0 && (
+            <Button title="Cancel Session" onPress={this.handleCancelSession} />
+          )}
+        </View>
       </View>
     );
   }
 };
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1
+  },
   container: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
     flexDirection: 'column',
     paddingTop: theme.spacing * 2,
     paddingBottom: theme.spacing * 3,
     paddingLeft: theme.spacing / 2,
-    paddingRight: theme.spacing / 2,
+    paddingRight: theme.spacing / 2
   },
   text: {
     textAlign: 'center'
   }
 });
 
-export default EXComponent;
+export default MainComponent;
