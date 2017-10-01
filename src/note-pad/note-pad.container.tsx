@@ -51,7 +51,7 @@ class ComponentName extends React.Component<ComponentProps, ComponentState> {
           onChangeText={this.handleTextChange}
           style={styles.textInput}
           multiline={true}
-          onTouchStart={this.handleTouch}
+          onTouchEnd={this.handleTouch}
         />
       </View>
     );
