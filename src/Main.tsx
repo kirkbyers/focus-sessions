@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 import NotesComponent from './note-pad/note-pad.container';
 import ButtonBarComponent from './button-bar/button-bar.component';
@@ -22,24 +22,24 @@ class EXComponent extends React.Component<Props, State> {
     breakInterval: 10,
     breakPlusInterval: 25,
     currentIntervalValue: 0,
+    initIntervalValue: 0,
     currentInterval: 0
   }
 
   handleFocusClick = () => {
-    this.setState((prevState: State) => ({ currentIntervalValue: prevState.focusInterval }));
-    this.setInterval();
+    this.setInterval(this.state.focusInterval);
   }
   handleBreakClick = () => {
-    this.setState((prevState: State) => ({ currentIntervalValue: prevState.breakInterval }));
-    this.setInterval();
+    this.setInterval(this.state.breakInterval);
   }
   handleBreakPlusClick = () => {
-    this.setState((prevState: State) => ({ currentIntervalValue: prevState.breakPlusInterval }));
-    this.setInterval();
+    this.setInterval(this.state.breakPlusInterval);
   }
 
-  setInterval = () => {
+  setInterval = (value: number) => {
     this.setState(() => ({
+      currentIntervalValue: value,
+      initIntervalValue: value,
       currentInterval: setInterval(() => {
         if (this.state.currentIntervalValue > 0) {
           this.setState((prevState: State) => ({ currentIntervalValue: Number(prevState.currentIntervalValue) - 1 }));
@@ -47,8 +47,13 @@ class EXComponent extends React.Component<Props, State> {
           clearInterval(this.state.currentInterval);
           endFocusNotification();
         }
-      }, 200)
+      }, 60000)
     }));
+  }
+
+  handleCancelSession = () => {
+    clearInterval(this.state.currentInterval);
+    this.setState((prevState: State) => ({ currentIntervalValue: 0 }));
   }
 
   render() {
@@ -60,6 +65,9 @@ class EXComponent extends React.Component<Props, State> {
           pressBreakPlusHandler={this.handleBreakPlusClick}
         />}
         <NotesComponent />
+        {this.state.currentInterval !== 0 && (
+          <Button title="Cancel Session" onPress={this.handleCancelSession} />
+        )}
       </View>
     );
   }
@@ -70,7 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     paddingTop: theme.spacing * 2,
-    paddingBottom: theme.spacing * 2,
+    paddingBottom: theme.spacing * 3,
     paddingLeft: theme.spacing / 2,
     paddingRight: theme.spacing / 2,
   },
