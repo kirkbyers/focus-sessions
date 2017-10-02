@@ -9,22 +9,27 @@ import endFocusNotification from './notifications/end-focus';
 interface Props { }
 
 interface State {
-  focusInterval: Number;
-  breakInterval: Number;
-  breakPlusInterval: Number;
-  currentIntervalValue: Number;
-  currentInterval: Number;
+  focusInterval: number;
+  breakInterval: number;
+  breakPlusInterval: number;
+  intervalTargetTime: number;
+  intervalTargetValue: number;
+  currentIntervalValue: number;
+  currentInterval: number;
 }
 
+const initState = (): State => ({
+  focusInterval: 50, // in min
+  breakInterval: 10, // in min
+  breakPlusInterval: 25, // in min
+  currentIntervalValue: 0, // Min till end
+  intervalTargetTime: 0, // Epoch Time/Date In min
+  intervalTargetValue: 0, // Total time pass In min
+  currentInterval: 0 // Cancelable Interval
+})
+
 class MainComponent extends React.Component<Props, State> {
-  state = {
-    focusInterval: 50,
-    breakInterval: 10,
-    breakPlusInterval: 25,
-    currentIntervalValue: 0,
-    initIntervalValue: 0,
-    currentInterval: 0
-  }
+  state = initState();
 
   handleFocusClick = () => {
     this.setInterval(this.state.focusInterval);
@@ -37,32 +42,36 @@ class MainComponent extends React.Component<Props, State> {
   }
 
   setInterval = (value: number) => {
-    this.setState(() => ({
-      currentIntervalValue: value,
-      initIntervalValue: value,
+    const now = new Date();
+    this.setState((prevState: State): Partial<State> => ({
+      currentIntervalValue: 0,
+      intervalTargetTime: (value) + (now.getTime() / 60000),
+      intervalTargetValue: value,
       currentInterval: setInterval(() => {
-        if (this.state.currentIntervalValue > 0) {
-          this.setState((prevState: State) => ({ currentIntervalValue: Number(prevState.currentIntervalValue) - 1 }));
+        const now = new Date();
+        const timeDiff = this.state.intervalTargetTime - (now.getTime() / 60000); // Time till end
+        if (timeDiff > 0) {
+          this.setState((prevState: State) => ({
+            currentIntervalValue: Math.ceil(timeDiff)
+          }));
         } else {
           clearInterval(this.state.currentInterval);
           endFocusNotification();
         }
-      }, 60000)
+      }, 1000)
     }));
   }
 
   handleCancelSession = () => {
     clearInterval(this.state.currentInterval);
-    this.setState((prevState: State) => ({ currentIntervalValue: 0 }));
+    this.setState((prevState: State) => (initState()));
   }
 
   render() {
-    const sessionCompleteRatio = (this.state.initIntervalValue - this.state.currentIntervalValue) / this.state.initIntervalValue;
     return (
       <View style={styles.root}>
-        {this.state.initIntervalValue !== 0 && <View style={{ backgroundColor: '#FFF1B8', flex: 100 * sessionCompleteRatio }} />}
-        {this.state.initIntervalValue !== 0 && <View style={{ backgroundColor: '#f58db6', flex: 100 - (100 * sessionCompleteRatio) }} />}
-        {this.state.currentIntervalValue === 0 && <View style={{ backgroundColor: '#FFF1B8', flex: 1 }} />}
+        <View style={{ backgroundColor: '#FFF1B8', flex: Math.floor(100 * ((this.state.intervalTargetValue - this.state.currentIntervalValue) / this.state.intervalTargetValue)) }} />
+        <View style={{ backgroundColor: '#f58db6', flex: Math.floor(100 - 100 * ((this.state.intervalTargetValue - this.state.currentIntervalValue) / this.state.intervalTargetValue)) }} />
         <View style={styles.container}>
           {this.state.currentIntervalValue === 0 && <ButtonBarComponent
             pressFocusHandler={this.handleFocusClick}
